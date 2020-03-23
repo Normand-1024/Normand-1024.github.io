@@ -1,1 +1,14 @@
+type: CNAME
+host: www.normanceism.com
+answer: Normand-1024.github.io
+TTL: 300
 
+type: CNAME
+host: www.henryzhouism.com
+answer: Normand-1024.github.io
+TTL: 300
+
+type: CNAME
+host: www.normandhaw.com
+answer: Normand-1024.github.io
+TTL: 300
