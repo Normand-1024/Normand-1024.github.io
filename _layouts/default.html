@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>{% if page.title %}{{ page.title }} – {% endif %}{{ site.name }} – {{ site.description }}</title>
-
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
     {% include meta.html %}
 
     <!--[if lt IE 9]>
@@ -27,7 +27,8 @@
           </div>
 
           <nav>
-            <a href="{{ site.baseurl }}/">Reading</a>
+            <a href="{{ site.baseurl }}/medium">Medium</a>
+            <a href="{{ site.baseurl }}/">Reading Log</a>
           </nav>
         </header>
       </div>

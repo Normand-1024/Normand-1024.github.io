@@ -2,15 +2,14 @@
 
 Hello! This is my work-in-progress personal website built using Jekyll
 
-How to run: `jerkyll serve -P 8080 --trace` on port 8080
+How to run locally: `jerkyll serve -P 8080 --trace` on port 8080
 
 ## TO-DO List
 
-- Integrate [Medium](https://medium.com/@Jason_Matthew/display-medium-articles-on-your-site-d772b3b05779) with this website
-- Integrate Arts with this website
+- Integrate [Medium](https://medium.com/@Jason_Matthew/display-medium-articles-on-your-site-d772b3b05779) with this website, we have figured out how to get json file of all the medium posts. Maybe we need to eventually use those info to build something similar to the blog posts
+- Integrate [Instagram](https://millarian.com/code/adding-an-instagram-feed-to-jekyll/) with this website (Currently the API is shut down), maybe we can change it into an art page?
 - Build a reading blog (seperate from medium)
 - Integrate with itch.io?
-- About page
 
 ## Reminding myself
 
