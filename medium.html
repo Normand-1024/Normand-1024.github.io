@@ -3,23 +3,78 @@ layout: default
 ---
 
 <script type="text/javascript">
-  document.write('<p>1234</p>'); // We can use this
-  $(function() {
-      var $content = $('#content');
-      console.log($content)
-      var data = {
-          rss_url: 'https://medium.com/feed/@henryzhou_82383'
-      };
-      $.get('https://api.rss2json.com/v1/api.json', data, function(response) {
-                if (response.status == 'ok') {
-                  var output = '<h1>' + response.feed.title + '</h1>';
-                  $.each(response.items, function(k, item) {
-                                    output += '<h2><a href="' + item.link + '" >' + item.title + '</h2></a>';
-                                    output += '<p>' + item.description + '</p>';
-                                }
-                        );
-                  $content.html(output);
+  const urlParams = new URLSearchParams(window.location.search);
+  const post_name = urlParams.get('postname');
+
+  var data = {
+      rss_url: 'https://medium.com/feed/@henryzhou_82383'
+  };
+
+  // Convert RSS feed to JSON
+  $.get('https://api.rss2json.com/v1/api.json', data, function(response) {
+      if (response.status == 'ok') {
+        // Formulate the JSON file
+        var output = "<div style=\"margin-top:1px;padding-top:1px\" class=\"medium_post\">";
+
+        if (post_name){
+          $.each(response.items, function(k, item) {
+            if (item.guid.replace("https://medium.com/p/", "") == post_name){
+              output += '<h2 style="margin-bottom:1px;text-align:center;">' + item.title + '</h2></a>';
+
+              item.pubDate.split(" ")[0]
+              output += '<h4 style="margin-top:1px;font-size:80%;margin-bottom:60px;text-align:center;">' + item.pubDate.split(" ")[0] + " | "
+                + item.categories.toString().replace(new RegExp(",", "g"), ", ") + '</h4>';
+
+              // Rule: 
+              //    If first element is <p>, print the second <p>
+              //    If first element is not <p>, print the first <p>
+              output += item.content;
+            }
+          });
+        }
+        else{
+          // No post, main page
+
+          $.each(response.items, function(k, item) {
+              output += '<h2 style="margin-bottom:1px;margin-top:1px;"><a href="' + 
+                    window.location.href + "?postname=" + item.guid.replace("https://medium.com/p/", "")
+                    + '" >' + item.title + '</h2></a>';
+
+              item.pubDate.split(" ")[0]
+              output += '<h4 style="margin-top:1px;font-size:80%;">' + item.pubDate.split(" ")[0] + " | "
+                + item.categories.toString().replace(new RegExp(",", "g"), ", ") + '</h4>';
+
+              // Rule: 
+              //    If first element is <p>, print the second <p>
+              //    If first element is not <p>, print the first <p>
+              post = $.parseHTML(item.content);
+
+              for (var i = 2; i < post.length; i++){
+                if (post[i]["nodeName"] == "P"){
+                  var text = post[i]["outerHTML"];
+
+                  // Cut content after a number of words
+                  text = text.split(" ").slice(0, 30).toString().replace(new RegExp(",", "g"), " ");
+                  text += "...</p>";
+
+                  output += text;
+                  break;
                 }
-      });
-    });
+              }
+            }
+          );
+        }
+        
+        output += "</div>";
+
+        $("#main").html(output);
+      }
+      else {
+        $("#main").html(
+          "<div class=\"post_not_found\">\
+            <p>Medium did not respond, but you can still...</p>\
+            <a href=\"https://medium.com/@henryzhou_82383\"> Go to Medium directly </a>\
+          </div>");
+      }
+  });
 </script>
