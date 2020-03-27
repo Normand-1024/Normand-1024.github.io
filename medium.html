@@ -55,7 +55,11 @@ layout: default
 
                   // Cut content after a number of words
                   text = text.split(" ").slice(0, 30).toString().replace(new RegExp(",", "g"), " ");
-                  text += "...</p>";
+                  text += "<a href=" + window.location.href +
+                           "?postname=" +
+                            item.guid.replace("https://medium.com/p/", "") +
+                           ">" + 
+                           "...</a></p>";
 
                   output += text;
                   break;
