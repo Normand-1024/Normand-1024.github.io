@@ -3,14 +3,13 @@ layout: default
 ---
 
 <article class="post">
-  <h1>{{ page.title }}</h1>
+  <h2 style="margin-bottom:1px;text-align:center;">{{ page.title }}</h2>
+  <h4 style="margin-top:1px;font-size:80%;margin-bottom:60px;text-align:center;">
+    {{ page.topic }} | Updated on {{ page.date | date: "%B %e, %Y" }}
+  </h4>
 
-  <div class="entry">
+  <div class="medium_post">
     {{ content }}
-  </div>
-
-  <div class="date">
-    Written on {{ page.date | date: "%B %e, %Y" }}
   </div>
 
   {% include disqus.html %}

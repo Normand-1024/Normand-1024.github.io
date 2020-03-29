@@ -45,7 +45,7 @@ h1, h2, h3, h4, h5, h6, blockquote {
 }
 
 h1 {
-  font-size: 30px;
+  font-size: 150%;//30px;
   a {
     color: inherit;
   }
@@ -190,7 +190,7 @@ img {
 
 .site-info {
   float: left;
-
+  vertical-align: middle;
   @include mobile {
     float: none;
     display: block;
@@ -220,7 +220,7 @@ img {
 
 nav {
   float: right;
-  margin-top: 23px; // @TODO: Vertically middle align
+  // margin-top: 23px; // @TODO: Vertically middle align
   font-family: $helveticaNeue;
   font-size: 18px;
 
@@ -307,7 +307,7 @@ footer {
 .medium_post {
   margin: 20px;
   padding: 20px;
-  letter-spacing: 1px;
+  //letter-spacing: 1px;
   font-family: $helvetica;
 }
 

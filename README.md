@@ -6,6 +6,7 @@ How to run locally: `jerkyll serve -P 8080 --trace` on port 8080
 
 ## TO-DO List
 
+- Maybe we should migrate to another framework?
 - Finish Art Page
 - Redraw the icons
 - Provide 404 images
