@@ -27,20 +27,24 @@
 		<script src="./chroma.js-master/chroma.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script type="x-shader/x-fragment" id="vertexshader-token">
+            attribute float alpha;
             uniform float scale;
 
-            varying vec4 gcolor;
+            varying vec3 gcolor;
+            varying float galpha;
             void main() {
                 vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
                 gl_Position = projectionMatrix * mvPosition;
 
                 gl_PointSize = 5.0 * scale / length(mvPosition.xyz); // Adjust point size here!
 
-                gcolor = vec4(color, 1.0);
+                gcolor = color;
+                galpha = alpha;
             }
         </script>
         <script type="x-shader/x-fragment" id="fragmentshader-token">
-            varying vec4 gcolor;
+            varying vec3 gcolor;
+            varying float galpha;
             void main() {
                 // this is the part that clips the point into a circle
                 float distance = length(4.0 * gl_PointCoord - 2.0);
@@ -50,7 +54,7 @@
                 if (gcolor.x < 0.01 && gcolor.y < 0.01 && gcolor.z < 0.01) {
                     discard;
                 }
-                gl_FragColor = gcolor -  distance / 40.0;
+                gl_FragColor = vec4(gcolor -  distance / 40.0, galpha);
             }
         </script>
 	</head>
@@ -93,6 +97,7 @@
             let particleWeight;
 			let particlePositions;
             let particleColor;
+            let particleOpacity;
             let topEdgeWeight = -1;
             let topNodeWeight = -1;
             let nodeWeightThreshold = 0; // Use this to filter out low weight nodes
@@ -100,11 +105,19 @@
 
             let availableIds = {}; // List of IDs available, each entry is in format [id, info]
 
+            let shiftPressed = false;
+
             // Allow linear intepolation between two colors based on distance
             var closestRGB = chroma('#f2190a');
             var farthestRGB = chroma('#293366');
-            var originalRGB = [0, 0, 0];
+            var originRGB = chroma([224, 144, 154]);
+            var navigableRGB = chroma('#f7e968');
+
+            var originalRGB = [0, 0, 0, 0]; // Different from OriginRGB, this is used to store original color for highlighting
+
             var colorRatioPow = 0.5;
+            var opacityTuning = 20;
+            var navigationMode = false;
 
             const inputElement = document.getElementById("input");
             inputElement.addEventListener("change", handleFiles, false);
@@ -149,7 +162,8 @@
                 const GUIparam = {
                     'colorRatioPow': 0.5,
                     'nodeWeightThreshold': 0,
-                    'particleConnectionWeight': 0
+                    'particleConnectionWeight': 0,
+                    'opacityTuning': 10,
                 };
 
                 gui.add(GUIparam, 'colorRatioPow', 0.05, 1, 0.005).name('Color Gradient').onChange(function(){
@@ -167,8 +181,15 @@
                     updatePtsColor();
                 })
                 
+                gui.add(GUIparam, 'opacityTuning', 0.4, 10).name('Opacity Tuning').onChange(function(){
+                    opacityTuning = GUIparam.opacityTuning;
+                    updatePtsColor();
+                })
+                
                 window.addEventListener( 'resize', onWindowResize, false );
                 document.addEventListener('dblclick', onDocumentDoubleClick);
+                document.addEventListener('keydown', onKeyDownEvent);
+                document.addEventListener('keyup', onKeyUpEvent);
                 
             }
 
@@ -205,9 +226,24 @@
                 }
             }
 
+            function onKeyDownEvent(event) {
+                if (event.keyCode == 16 && !shiftPressed){ // SHIFT key
+                    shiftPressed = true;
+                    updatePtsColor();
+                }
+            }
+
+            function onKeyUpEvent(event) {
+                if (event.keyCode == 16 && shiftPressed){ // SHIFT key
+                    shiftPressed = false;
+                    updatePtsColor();
+                }
+            }
+
             function animate() {
 				pointCloud.geometry.attributes.position.needsUpdate = true;
 				pointCloud.geometry.attributes.color.needsUpdate = true;
+				pointCloud.geometry.attributes.alpha.needsUpdate = true;
 
 				requestAnimationFrame( animate );
 
@@ -232,11 +268,15 @@
 
                     var tobeINTERSECTED = null;
                     for (var i = 0; i < intersects.length; i++) {
-                        if (particleWeight[intersects[i].index] >= nodeWeightThreshold &&
-                            particleConnectionWeight[intersects[i].index]>= connWeightThreshold){
+                        // Test shift filtering and then test threshold
+                        if (shiftPressed && availableIds[particleData[intersects[i].index].id]
+                            || !shiftPressed){
+                            if (particleWeight[intersects[i].index] >= nodeWeightThreshold &&
+                                particleConnectionWeight[intersects[i].index]>= connWeightThreshold){
 
-                            tobeINTERSECTED = intersects[i].index;
-                            break;
+                                tobeINTERSECTED = intersects[i].index;
+                                break;
+                            }
                         }
                     }
 
@@ -245,16 +285,19 @@
                         particleColor[INTERSECTED * 3] = originalRGB[0];
                         particleColor[INTERSECTED * 3 + 1] = originalRGB[1];
                         particleColor[INTERSECTED * 3 + 2] = originalRGB[2];
+                        particleOpacity[INTERSECTED] = originalRGB[3];
                         
                         INTERSECTED = tobeINTERSECTED;
 
                         originalRGB = [particleColor[INTERSECTED * 3],
                                     particleColor[INTERSECTED * 3 + 1], 
-                                    particleColor[INTERSECTED * 3 + 2]];
+                                    particleColor[INTERSECTED * 3 + 2],
+                                    particleOpacity[INTERSECTED]];
 
                         particleColor[INTERSECTED * 3] = 1;
                         particleColor[INTERSECTED * 3 + 1] = 1;
                         particleColor[INTERSECTED * 3 + 2] = 1;
+                        particleOpacity[INTERSECTED] = 1;
                         
                         var particle_text = particleData[INTERSECTED].name;
                         var particle_pos = new THREE.Vector3(particlePositions[INTERSECTED*3],
@@ -271,6 +314,7 @@
                         particleColor[INTERSECTED * 3] = originalRGB[0];
                         particleColor[INTERSECTED * 3 + 1] = originalRGB[1];
                         particleColor[INTERSECTED * 3 + 2] = originalRGB[2];
+                        particleOpacity[INTERSECTED] = originalRGB[3];
                     }
                     INTERSECTED = null;
                     hideTooltip();
@@ -389,9 +433,9 @@
                     
 					vertexColors:   true,
                     blending:       THREE.CustomBlending,
-                    blendSrc:       THREE.OneFactor,
-                    blendDst:       THREE.ZeroFactor,
-                    depthTest:      true,
+                    blendSrc:       THREE.SrcAlphaFactor,
+                    blendDst:       THREE.DstAlphaFactor,
+                    depthTest:      false,
                     depthWrite:     true,
                     transparent:    true
 				} );
@@ -399,6 +443,7 @@
                 particles = new THREE.BufferGeometry();
                 particlePositions = new Float32Array( maxParticleCount * 3 );
                 particleColor = new Float32Array( maxParticleCount * 3 );
+                particleOpacity = new Float32Array(maxParticleCount);
                 particleConnectionWeight = new Float32Array( maxParticleCount);
                 particleWeight = new Float32Array( maxParticleCount);
                 particleData.length = 0;
@@ -438,6 +483,7 @@
                     particleColor[ i * 3 ] = 1;
                     particleColor[ i * 3 + 1 ] = 1;
                     particleColor[ i * 3 + 2 ] = 1;
+                    particleOpacity[i] = 1;
 
 					// add it to the geometry
 					particleData.push( {
@@ -462,6 +508,7 @@
 
 				particles.setAttribute( 'position', new THREE.BufferAttribute( particlePositions, 3 ).setUsage( THREE.DynamicDrawUsage ) );
 				particles.setAttribute( 'color', new THREE.BufferAttribute( particleColor, 3 ).setUsage( THREE.DynamicDrawUsage ) );
+				particles.setAttribute( 'alpha', new THREE.BufferAttribute( particleOpacity, 1 ).setUsage( THREE.DynamicDrawUsage ) );
 
 				// create the particle system
                 pointCloud = new THREE.Points( particles, pMaterial );
@@ -469,6 +516,7 @@
 				group.add( pointCloud );
 
                 // Update Node Weight filter param
+                /*
                 if (gui){
                     gui.__controllers[1].initialValue = 0;
                     //gui.__controllers[1].__max= topNodeWeight;
@@ -476,6 +524,7 @@
                 }
                 nodeWeightThreshold = 0;
                 connWeightThreshold = 0;
+                */
 
                 updatePtsColor();
             }
@@ -498,21 +547,25 @@
             function updatePtsColor() {
                 for (let i = 0; i < maxParticleCount; i++) {
                     if (particleWeight[i] < nodeWeightThreshold ||
-                         particleConnectionWeight[i] < connWeightThreshold) { // Change the point if below minimum weight
+                         particleConnectionWeight[i] < connWeightThreshold) { 
+                        // Hide the point if below minimum weight
                         particleColor[ i * 3 ] = 0.0;
                         particleColor[ i * 3 + 1 ] = 0.0;
                         particleColor[ i * 3 + 2] = 0.0;
+                        particleOpacity[i] = 0.0;
                     } 
                     else {
                         if (particleData[i].id == originAttr) { // Color for origin point
-                            particleColor[ i * 3 ] = 224 / 255;
-                            particleColor[ i * 3 + 1 ] = 144 / 255;
-                            particleColor[ i * 3 + 2 ] = 154 / 255;
+                            particleColor[ i * 3 ] = originRGB.rgb()[0] / 255;
+                            particleColor[ i * 3 + 1 ] = originRGB.rgb()[1] / 255;
+                            particleColor[ i * 3 + 2 ] = originRGB.rgb()[2] / 255;
+                            particleOpacity[i] = 1.0;
                         }
                         else if (availableIds[particleData[i].id]) { // Change color if the point can be navigated
-                            particleColor[ i * 3 ] = 84 / 255;
-                            particleColor[ i * 3 + 1 ] = 196 / 255;
-                            particleColor[ i * 3 + 2 ] = 114 / 255;
+                            particleColor[ i * 3 ] = navigableRGB.rgb()[0] / 255;
+                            particleColor[ i * 3 + 1 ] = navigableRGB.rgb()[1] / 255;
+                            particleColor[ i * 3 + 2 ] = navigableRGB.rgb()[2] / 255;
+                            particleOpacity[i] = 1.0;
                         }
                         else { // Change color based on slime connection
                             var ratio = Math.pow(particleConnectionWeight[i] / topEdgeWeight, colorRatioPow);
@@ -520,6 +573,14 @@
                             particleColor[ i * 3 ] = finalColor[0] / 255;
                             particleColor[ i * 3 + 1 ] = finalColor[1] / 255;
                             particleColor[ i * 3 + 2 ] = finalColor[2] / 255;
+
+                            particleOpacity[i] = 1 - Math.exp(-opacityTuning * ratio);
+
+                            // lower the opacity drastically if shift is pressed
+                            if (shiftPressed && availableIds[particleData[i].id] == undefined) {
+                                particleColor[ i * 3 ] *= 0.2;
+                                particleOpacity[i] *= 0.2;
+                            }
                         }
                     }
                 }
