@@ -106,6 +106,7 @@
             let availableIds = {}; // List of IDs available, each entry is in format [id, info]
 
             let shiftPressed = false;
+            let shiftDim = true;
 
             // Allow linear intepolation between two colors based on distance
             var closestRGB = chroma('#f2190a');
@@ -162,8 +163,9 @@
                 const GUIparam = {
                     'colorRatioPow': 0.5,
                     'nodeWeightThreshold': 0,
-                    'particleConnectionWeight': 0,
+                    'particleConnectionWeight': 1000,
                     'opacityTuning': 10,
+                    'shiftDim': true
                 };
 
                 gui.add(GUIparam, 'colorRatioPow', 0.05, 1, 0.005).name('Color Gradient').onChange(function(){
@@ -171,12 +173,12 @@
                     updatePtsColor();
                 })
                 
-                gui.add(GUIparam, 'nodeWeightThreshold', 0, 0.5, 0.005).name('Lowest Weight').onChange(function(){
+                gui.add(GUIparam, 'nodeWeightThreshold', 0, 1).name('Lowest Weight').onChange(function(){
                     nodeWeightThreshold = GUIparam.nodeWeightThreshold;
                     updatePtsColor();
                 })
                 
-                gui.add(GUIparam, 'particleConnectionWeight', 0, 100000).name('Lowest Connect').onChange(function(){
+                gui.add(GUIparam, 'particleConnectionWeight', 1000, 70000).name('Lowest Connect').onChange(function(){
                     connWeightThreshold = GUIparam.particleConnectionWeight;
                     updatePtsColor();
                 })
@@ -184,6 +186,10 @@
                 gui.add(GUIparam, 'opacityTuning', 0.4, 10).name('Opacity Tuning').onChange(function(){
                     opacityTuning = GUIparam.opacityTuning;
                     updatePtsColor();
+                })
+
+                gui.add(GUIparam, 'shiftDim').name('Dim When Shift').onChange(function(){
+                    shiftDim = GUIparam.shiftDim;
                 })
                 
                 window.addEventListener( 'resize', onWindowResize, false );
@@ -577,7 +583,7 @@
                             particleOpacity[i] = 1 - Math.exp(-opacityTuning * ratio);
 
                             // lower the opacity drastically if shift is pressed
-                            if (shiftPressed && availableIds[particleData[i].id] == undefined) {
+                            if (shiftPressed && shiftDim && availableIds[particleData[i].id] == undefined) {
                                 particleColor[ i * 3 ] *= 0.2;
                                 particleOpacity[i] *= 0.2;
                             }
