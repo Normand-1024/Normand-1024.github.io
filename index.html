@@ -107,6 +107,7 @@
 
             let shiftPressed = false;
             let shiftDim = true;
+            let displayMultiToken = false;
 
             // Allow linear intepolation between two colors based on distance
             var closestRGB = chroma('#f2190a');
@@ -165,7 +166,8 @@
                     'nodeWeightThreshold': 0,
                     'particleConnectionWeight': 1000,
                     'opacityTuning': 10,
-                    'shiftDim': true
+                    'shiftDim': true,
+                    'displayMultiToken': false
                 };
 
                 gui.add(GUIparam, 'colorRatioPow', 0.05, 1, 0.005).name('Color Gradient').onChange(function(){
@@ -190,6 +192,10 @@
 
                 gui.add(GUIparam, 'shiftDim').name('Dim When Shift').onChange(function(){
                     shiftDim = GUIparam.shiftDim;
+                })
+
+                gui.add(GUIparam, 'displayMultiToken').name('Show More Tokens').onChange(function(){
+                    displayMultiToken = GUIparam.displayMultiToken;
                 })
                 
                 window.addEventListener( 'resize', onWindowResize, false );
@@ -310,7 +316,24 @@
                                             particlePositions[INTERSECTED*3 + 1], 
                                             particlePositions[INTERSECTED*3 + 2]);
 
-                        var particle_mesg = particle_text;
+                        // A hacky solution to display multiple tokens
+                        var particle_mesg = "";
+                        if (displayMultiToken){
+                            for (var i = 0; i < intersects.length; i++) {
+                                if (shiftPressed && availableIds[particleData[intersects[i].index].id]
+                                    || !shiftPressed){
+                                    if (particleWeight[intersects[i].index] >= nodeWeightThreshold &&
+                                        particleConnectionWeight[intersects[i].index]>= connWeightThreshold){
+
+                                        particle_mesg += "{" + particleData[intersects[i].index].name + "}\n";
+                                    }
+                                }
+                            }
+                        }
+                        else{
+                            particle_mesg = particle_text;
+                        }
+
 
                         showTooltip(particle_pos, particle_mesg);
                     }
