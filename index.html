@@ -108,6 +108,7 @@
             let shiftPressed = false;
             let shiftDim = true;
             let displayMultiToken = false;
+            let alwaysAnchor = false;
 
             // Allow linear intepolation between two colors based on distance
             var closestRGB = chroma('#f2190a');
@@ -167,7 +168,8 @@
                     'particleConnectionWeight': 1000,
                     'opacityTuning': 10,
                     'shiftDim': true,
-                    'displayMultiToken': false
+                    'displayMultiToken': false,
+                    'alwaysAnchor': false
                 };
 
                 gui.add(GUIparam, 'colorRatioPow', 0.05, 1, 0.005).name('Color Gradient').onChange(function(){
@@ -196,6 +198,11 @@
 
                 gui.add(GUIparam, 'displayMultiToken').name('Show More Tokens').onChange(function(){
                     displayMultiToken = GUIparam.displayMultiToken;
+                })
+                
+                gui.add(GUIparam, 'alwaysAnchor').name('Keep Anchor Displayed').onChange(function(){
+                    alwaysAnchor = GUIparam.alwaysAnchor;
+                    updatePtsColor();
                 })
                 
                 window.addEventListener( 'resize', onWindowResize, false );
@@ -283,8 +290,12 @@
                         // Test shift filtering and then test threshold
                         if (shiftPressed && availableIds[particleData[intersects[i].index].id]
                             || !shiftPressed){
-                            if (particleWeight[intersects[i].index] >= nodeWeightThreshold &&
-                                particleConnectionWeight[intersects[i].index]>= connWeightThreshold){
+                            if (
+                                (particleWeight[intersects[i].index] >= nodeWeightThreshold &&
+                                particleConnectionWeight[intersects[i].index]>= connWeightThreshold)
+                                 || 
+                                (availableIds[particleData[intersects[i].index].id] && alwaysAnchor)
+                                ){
 
                                 tobeINTERSECTED = intersects[i].index;
                                 break;
@@ -575,8 +586,10 @@
             // Update the color value for all points
             function updatePtsColor() {
                 for (let i = 0; i < maxParticleCount; i++) {
-                    if (particleWeight[i] < nodeWeightThreshold ||
-                         particleConnectionWeight[i] < connWeightThreshold) { 
+                    if ((particleWeight[i] < nodeWeightThreshold ||
+                         particleConnectionWeight[i] < connWeightThreshold)
+                          && 
+                        (!availableIds[particleData[i].id] || !alwaysAnchor)) { 
                         // Hide the point if below minimum weight
                         particleColor[ i * 3 ] = 0.0;
                         particleColor[ i * 3 + 1 ] = 0.0;
