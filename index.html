@@ -109,6 +109,8 @@
             let shiftDim = true;
             let displayMultiToken = false;
             let alwaysAnchor = false;
+            let colorMode = "slime connect";
+            let filterPOS = "None";
 
             // Allow linear intepolation between two colors based on distance
             var closestRGB = chroma('#f2190a');
@@ -117,6 +119,15 @@
             var navigableRGB = chroma('#f7e968');
 
             var originalRGB = [0, 0, 0, 0]; // Different from OriginRGB, this is used to store original color for highlighting
+
+            let posColorMap = { 'ADV': chroma('#5ddfe8'),   'NUM': chroma('#bfd474'),
+                                'ADJ': chroma('#773ac2'),   'NOUN': chroma('#9cd63e'),
+                                'VERB': chroma('#3e7bd6'),  'ADP': chroma('#8052bf'),
+                                'AUX': chroma('#00399c'),   'PROPN': chroma('#d64d3e'),
+                                'DET': chroma('#899400'),   'PUNCT': chroma('#940155'),
+                                'PRON': chroma('#8a0d00'),  'CCONJ': chroma('#820133'),
+                                'X': chroma('#006e0d'),     'PART': chroma('#734d00'),
+                                'INTJ': chroma('#802700'),  'SYM': chroma('#ad00a8')}
 
             var colorRatioPow = 0.5;
             var opacityTuning = 20;
@@ -163,6 +174,8 @@
                 gui = new GUI();
 
                 const GUIparam = {
+                    'colorMode': "slime connect",
+                    'filterPOS': "None",
                     'colorRatioPow': 0.5,
                     'nodeWeightThreshold': 0,
                     'particleConnectionWeight': 1000,
@@ -171,6 +184,21 @@
                     'displayMultiToken': false,
                     'alwaysAnchor': false
                 };
+
+                var colorModeList = ["slime connect", "part of speech"];
+                
+                gui.add(GUIparam, 'colorMode', colorModeList).name('Color Mode').onChange(function(){
+                    colorMode = GUIparam.colorMode;
+                    updatePtsColor();
+                })
+
+                var filterPOSList = ['None', 'ADV', 'NUM', 'ADJ', 'NOUN', 'VERB', 'ADP', 'AUX', 'PROPN',
+                                'DET', 'PUNCT', 'PRON', 'CCONJ', 'X', 'PART', 'INTJ', 'SYM']
+                                
+                gui.add(GUIparam, 'filterPOS', filterPOSList).name('Filter POS').onChange(function(){
+                    filterPOS = GUIparam.filterPOS;
+                    updatePtsColor();
+                })
 
                 gui.add(GUIparam, 'colorRatioPow', 0.05, 1, 0.005).name('Color Gradient').onChange(function(){
                     colorRatioPow = GUIparam.colorRatioPow;
@@ -587,8 +615,8 @@
             function updatePtsColor() {
                 for (let i = 0; i < maxParticleCount; i++) {
                     if ((particleWeight[i] < nodeWeightThreshold ||
-                         particleConnectionWeight[i] < connWeightThreshold)
-                          && 
+                        particleConnectionWeight[i] < connWeightThreshold)
+                        && 
                         (!availableIds[particleData[i].id] || !alwaysAnchor)) { 
                         // Hide the point if below minimum weight
                         particleColor[ i * 3 ] = 0.0;
@@ -609,20 +637,45 @@
                             particleColor[ i * 3 + 2 ] = navigableRGB.rgb()[2] / 255;
                             particleOpacity[i] = 1.0;
                         }
-                        else { // Change color based on slime connection
+                        else {
                             var ratio = Math.pow(particleConnectionWeight[i] / topEdgeWeight, colorRatioPow);
-                            var finalColor = chroma.mix(farthestRGB, closestRGB, ratio, 'hsl').rgb();
+                            var mypos = particleData[i].name.split('_')[1];
+                            var finalColor;
+                            switch (colorMode) {
+                                // Change color based on slime connection
+                                case "slime connect":
+                                    finalColor = chroma.mix(farthestRGB, closestRGB, ratio, 'hsl').rgb();
+                                    break;
+
+                                // Change color based on the part of speech
+                                case "part of speech":
+                                    finalColor = posColorMap[mypos].rgb();
+                                    break;
+                            }
+
                             particleColor[ i * 3 ] = finalColor[0] / 255;
                             particleColor[ i * 3 + 1 ] = finalColor[1] / 255;
                             particleColor[ i * 3 + 2 ] = finalColor[2] / 255;
 
                             particleOpacity[i] = 1 - Math.exp(-opacityTuning * ratio);
 
+                            if (mypos == filterPOS) {
+                                particleOpacity[i] = 1;
+                            }
+
                             // lower the opacity drastically if shift is pressed
                             if (shiftPressed && shiftDim && availableIds[particleData[i].id] == undefined) {
                                 particleColor[ i * 3 ] *= 0.2;
                                 particleOpacity[i] *= 0.2;
                             }
+
+                            // lower the opacity drastically if POS is filtered
+                            if (filterPOS != "None" && mypos != filterPOS){
+                                particleColor[ i * 3 ] *= 0.3;
+                                particleColor[ i * 3 + 1 ] *= 0.3;
+                                particleColor[ i * 3 + 2 ] *= 0.3;
+                                particleOpacity[i] *= 0.3;
+                            } 
                         }
                     }
                 }
