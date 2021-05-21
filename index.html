@@ -58,10 +58,6 @@
         </script>
 	</head>
 	<body>
-
-        <div id="data-selection">
-            <input type="file" id="input"> Choose file to read here </input>
-        </div>
         <div id="tooltip"></div>
 
         <div id="container"></div>
@@ -70,13 +66,44 @@
             import { OrbitControls } from './jsm/controls/OrbitControls.js';
             import { GUI } from './jsm/libs/dat.gui.module.js';
 
-            let readFile = "../word_similarity_result/graph/TNG-100/0-0.txt"
+            // #######################################################
+            //      COPY N PASTE FROM THE WEB
+            // #######################################################
+
+            var getFileBlob = function (url, cb) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", url);
+                xhr.responseType = "blob";
+                xhr.addEventListener('load', function() {
+                    cb(xhr.response);
+                });
+                xhr.send();
+            };
+
+            var blobToFile = function (blob, name) {
+                blob.lastModifiedDate = new Date();
+                blob.name = name;
+                return blob;
+            };
+
+            var getFileObject = function(filePathOrUrl, cb) {
+                var splitUrl = filePathOrUrl.split('/');
+                getFileBlob(filePathOrUrl, function (blob) {
+                    cb(blobToFile(blob, splitUrl[splitUrl.length - 1]));
+                });
+            };
+            // #######################################################
+
+            let dataDirectory = "data/global/"
             let firstFile = true; // We want this to be false after loading the first file so that the points dont shift around
+
+            // ** Set of variables from deposit_reader.py, important for coordiante conversion **
+            let SCALING_FACTOR_SLIME = 10;
+            let GRID_MIN = [-115.75681, -101.80056, -126.10199]; // grid center - size / 2 given in metadata
 
             let group
             let container, stat;
 			let camera, scene, renderer;
-			let particles;
 			let pointCloud;
             let controls;
 
@@ -93,6 +120,7 @@
             
 			var maxParticleCount = 1000;
             const particleData = [];
+			let particles;
             let particleConnectionWeight;
             let particleWeight;
 			let particlePositions;
@@ -104,6 +132,13 @@
             let connWeightThreshold = 0; // Use this to filter out low slime mold connection
 
             let availableIds = {}; // List of IDs available, each entry is in format [id, info]
+
+            // ===================================
+            // =========VARIABLE FOR NEW THINGS===
+
+
+            // ===================================
+            // ===================================
 
             let shiftPressed = false;
             let shiftDim = true;
@@ -130,11 +165,8 @@
                                 'INTJ': chroma('#802700'),  'SYM': chroma('#ad00a8')}
 
             var colorRatioPow = 0.5;
-            var opacityTuning = 20;
+            var opacityTuning = 0.4;
             var navigationMode = false;
-
-            const inputElement = document.getElementById("input");
-            inputElement.addEventListener("change", handleFiles, false);
 
             init();
             animate();
@@ -160,11 +192,12 @@
                 scene.add(group);
 
                 // REQUIRED - add meshes, add both point and edge (Should be reading data)
-                setUpGraphMesh([]);
+                initializeData();
+                automaticLoadData();
                 
                 // REQUIRED
                 renderer = new THREE.WebGLRenderer();
-                renderer.setSize(window.innerWidth, window.innerHeight-20);
+                renderer.setSize(window.innerWidth, window.innerHeight);
                 document.body.appendChild(renderer.domElement);
                 
 				container.appendChild( renderer.domElement );
@@ -178,8 +211,8 @@
                     'filterPOS': "None",
                     'colorRatioPow': 0.5,
                     'nodeWeightThreshold': 0,
-                    'particleConnectionWeight': 1000,
-                    'opacityTuning': 10,
+                    'particleConnectionWeight': 0,
+                    'opacityTuning': 0.4,
                     'shiftDim': true,
                     'displayMultiToken': false,
                     'alwaysAnchor': false
@@ -210,12 +243,12 @@
                     updatePtsColor();
                 })
                 
-                gui.add(GUIparam, 'particleConnectionWeight', 1000, 70000).name('Lowest Connect').onChange(function(){
+                gui.add(GUIparam, 'particleConnectionWeight', 0, 70000).name('Lowest Connect').onChange(function(){
                     connWeightThreshold = GUIparam.particleConnectionWeight;
                     updatePtsColor();
                 })
                 
-                gui.add(GUIparam, 'opacityTuning', 0.4, 10).name('Opacity Tuning').onChange(function(){
+                gui.add(GUIparam, 'opacityTuning', 0, 1).name('Opacity Fading').onChange(function(){
                     opacityTuning = GUIparam.opacityTuning;
                     updatePtsColor();
                 })
@@ -266,8 +299,21 @@
                 if (INTERSECTED) {
                     if (availableIds[particleData[INTERSECTED].id]){ // Check if point is navigatable
                         console.log("LOADING " + particleData[INTERSECTED].id.toString());
-                        getFileObject('data/' + particleData[INTERSECTED].id.toString() + '.txt', function (fileObject) {
-                            loadFile(fileObject);
+                        
+                        originAttr = particleData[INTERSECTED].id;
+                        getFileObject(dataDirectory + particleData[INTERSECTED].id.toString() +".txt",
+                                         function (anchorData) {
+                            let reader = new FileReader();
+
+                            reader.onload = (e) => {
+                                const file = e.target.result;
+                                var lines = file.split(/\r\n|\n/);
+                                lines = lines.slice(0, lines.length - 1);
+                                console.log(lines);
+                                loadAnchor(lines);
+                            }
+
+                            var a = reader.readAsText(anchorData);
                         }); 
                     }
                 }
@@ -425,70 +471,101 @@
                 }
             }
 
-            function handleFiles() {
-                const selectedFile = document.getElementById('input').files[0];
+            // Initialize all the data structures
+            // This function is necessary because it creates all the data structures
+            function initializeData() {
+                loadFullData([]);
+                loadMetaMain([]);
+                loadAnchor([]);
+            }
 
-                // Read meta file first if meta data
-                if (selectedFile.name == "meta-main.txt") {
+            // This is the main data load function, calls three other load functions
+            function automaticLoadData() {
+
+                // 1. Load full_data
+                getFileObject(dataDirectory + "meta-main.txt", function (metamain) {
                     let reader = new FileReader();
 
-                    // Handle meta data information
+                    // Clear the scene
+                    scene.remove(scene.children[0]);
+                    group = new THREE.Group();
+                    scene.add(group); 
+                    // ===================
+
                     reader.onload = (e) => {
                         const file = e.target.result;
                         var lines = file.split(/\r\n|\n/);
                         lines = lines.slice(0, lines.length - 1);
                         
-                        var default_pos = lines[0];
+                        // Important initialization steps
+                        originAttr = eval(lines[0]);
+                        // ===================
 
-                        for (var i = 1; i < lines.length; i++) {
-                            var ln = lines[i];
-                            var lnspl = ln.split(' ');
-                            availableIds[lnspl[0]] = lnspl.slice(1).join(' ');
-                        }
+                        loadMetaMain(lines);
 
-                        console.log(availableIds);
-                        getFileObject('data/' + default_pos.toString() + '.txt', function (fileObject) {
-                            loadFile(fileObject);
+                        // 2. Load meta-main, this is embedded because it needs originAttr to be assigned
+                        getFileObject(dataDirectory + "full_data", function (fulldata) {
+                            let reader = new FileReader();
+                            reader.onload = (e) => {
+                                    
+                                const file = e.target.result;
+                                var lines = file.split(/\r\n|\n/);
+                                lines = lines.slice(0, lines.length - 1);
+
+                                loadFullData(lines);
+                                    
+                                // 3. Load meta-main
+                                console.log(dataDirectory + originAttr.toString() +".txt");
+                                getFileObject(dataDirectory + originAttr.toString() +".txt", function (anchorData) {
+                                    let reader = new FileReader();
+
+                                    reader.onload = (e) => {
+                                        const file = e.target.result;
+                                        var lines = file.split(/\r\n|\n/);
+                                        lines = lines.slice(0, lines.length - 1);
+                                        loadAnchor(lines);
+                                        //adjustGraphPos();
+                                    }
+
+                                    var a = reader.readAsText(anchorData);
+
+                                    console.log(scene);
+                                }); 
+                            }
+
+                            var a = reader.readAsText(fulldata);
                         }); 
                     }
 
-                    var a = reader.readAsText(selectedFile);
-                }
-                // TODO: Handle file if not meta data, legacy code that might retire
-                else {
-                    loadFile(selectedFile);
+                    var a = reader.readAsText(metamain);
+                }); 
+                
+            }
+
+            // LOADING META_MAIN
+            function loadMetaMain(lines) {
+                for (var i = 1; i < lines.length; i++) {
+                    var ln = lines[i];
+                    var lnspl = ln.split(' ');
+
+                    //if (eval(lnspl[0]) >= maxParticleCount){
+                    //    continue;
+                    //}
+
+                    // TODO: We skipped size checking here, that means availableIds will have irrelevant data if point size is too big
+
+                    availableIds[eval(lnspl[0])] = lnspl.slice(1).join(' ');
                 }
             }
 
-            function loadFile(selectedFile = null) {
-                originAttr = selectedFile.name.split('.')[0];
-
-                let reader = new FileReader();
-
-                reader.onload = (e) => {
-                    const file = e.target.result;
-                    var lines = file.split(/\r\n|\n/);
-                    lines = lines.slice(0, lines.length - 1);
-
-                    //console.log(lines.slice(0, 10));
-                    
-                    scene.remove(scene.children[0]);
-
-                    group = new THREE.Group();
-                    scene.add(group); 
-
-                    setUpGraphMesh(lines);
-                }
-
-                var a = reader.readAsText(selectedFile);            
-            }
-
-            function setUpGraphMesh(lines){
+            // LOADING FULL DATA
+            function loadFullData(lines) {
                 maxParticleCount = lines.length / 2;
 
                 // ACHTUNG: THIS IS LIMITING THE NUMBER OF NODES 
                 if (maxParticleCount > 1000000)
                     maxParticleCount = 1000000;
+
                 console.log("Number of points: " + maxParticleCount.toString());
 
 				const pMaterial = new THREE.ShaderMaterial( {
@@ -510,48 +587,27 @@
 
                 particles = new THREE.BufferGeometry();
                 particlePositions = new Float32Array( maxParticleCount * 3 );
+                particleWeight = new Float32Array( maxParticleCount);
                 particleColor = new Float32Array( maxParticleCount * 3 );
                 particleOpacity = new Float32Array(maxParticleCount);
                 particleConnectionWeight = new Float32Array( maxParticleCount);
-                particleWeight = new Float32Array( maxParticleCount);
                 particleData.length = 0;
 
-				for ( let i = 0; i < maxParticleCount; i ++ ) {
+                for ( let i = 0; i < maxParticleCount; i ++ ) {
                     var wordContent = lines[i * 2];
 
-                    var wordGraphAttribute = lines[i * 2 + 1]
-                                    .replace('(', '')
-                                    .replace('[', '')
-                                    .replace(']', '')
-                                    .replace(')', '');
-                    wordGraphAttribute = wordGraphAttribute.split(',');
+                    var wordGraphAttribute = lines[i * 2 + 1];
+                    wordGraphAttribute = wordGraphAttribute.split(' ');
 
-                    const id = wordGraphAttribute[0];
-                    const edgeWeight = eval(wordGraphAttribute[1]);
-                    const nodeWeight = eval(wordGraphAttribute[2]);
-					const x = eval(wordGraphAttribute[3]);
-					const y = eval(wordGraphAttribute[4]);
-                    const z = eval(wordGraphAttribute[5]);
-                    
-                    if (id == originAttr){
-                        origini = i;
-
-                        if (firstFile){
-                            // We want this to be false after loading the first file so that the points dont shift around
-                            firstFile = false;
-                            originX = x;
-                            originY = y;
-                            originZ = z;
-                        }
-                    }
+                    const id = i;
+					const x = eval(wordGraphAttribute[0]);
+					const y = eval(wordGraphAttribute[1]);
+                    const z = eval(wordGraphAttribute[2]);
+                    const nodeWeight = eval(wordGraphAttribute[3]);
 
 					particlePositions[ i * 3 ] = x;
 					particlePositions[ i * 3 + 1 ] = y;
                     particlePositions[ i * 3 + 2 ] = z;
-                    particleColor[ i * 3 ] = 1;
-                    particleColor[ i * 3 + 1 ] = 1;
-                    particleColor[ i * 3 + 2 ] = 1;
-                    particleOpacity[i] = 1;
 
 					// add it to the geometry
 					particleData.push( {
@@ -559,42 +615,61 @@
                         name: wordContent
                     } );
 
-                    // add edge weight
-                    particleConnectionWeight[i] = edgeWeight;
-                    if (edgeWeight > topEdgeWeight){
-                        topEdgeWeight = edgeWeight;
-                    }
-                    
                     // add point weight
                     particleWeight[i] = nodeWeight;
                     if (nodeWeight > topNodeWeight){
                         topNodeWeight = nodeWeight;
                     }
+
+                    
+                    if (id == originAttr){
+                        origini = id;
+
+                        if (firstFile){
+                            // We want this to be false after loading the first file so that the points dont shift around
+                            firstFile = false;
+                            originX = particlePositions[ id * 3 ] * SCALING_FACTOR_SLIME - GRID_MIN[0];
+                            originY = particlePositions[ id * 3 + 1 ] * SCALING_FACTOR_SLIME - GRID_MIN[1];
+                            originZ = particlePositions[ id * 3 + 2 ] * SCALING_FACTOR_SLIME - GRID_MIN[2];
+                        }
+                    }
                 }
                 
-                adjustGraphPos();
-
 				particles.setAttribute( 'position', new THREE.BufferAttribute( particlePositions, 3 ).setUsage( THREE.DynamicDrawUsage ) );
 				particles.setAttribute( 'color', new THREE.BufferAttribute( particleColor, 3 ).setUsage( THREE.DynamicDrawUsage ) );
 				particles.setAttribute( 'alpha', new THREE.BufferAttribute( particleOpacity, 1 ).setUsage( THREE.DynamicDrawUsage ) );
 
 				// create the particle system
+                adjustGraphPos();
+
                 pointCloud = new THREE.Points( particles, pMaterial );
-
 				group.add( pointCloud );
+            }
+            
+            // LOADING ANCHOR POINT
+            function loadAnchor(lines) {
+                // We want to adjust the position here, initiate all the colors etc.
+                // particleConnectionWeight = new Float32Array( maxParticleCount);
+                particleConnectionWeight.fill(0);
 
-                // Update Node Weight filter param
-                /*
-                if (gui){
-                    gui.__controllers[1].initialValue = 0;
-                    //gui.__controllers[1].__max= topNodeWeight;
-                    gui.__controllers[1].setValue(0);
+                for (let i = 0; i < lines.length; i++) {
+                    var lineData = lines[i].split(',');
+
+                    const id = eval(lineData[0]);
+                    const edgeWeight = eval(lineData[1]);
+                    
+                    if (id >= maxParticleCount){
+                        continue;
+                    }
+
+                    particleConnectionWeight[id] = edgeWeight;
+                    if (edgeWeight > topEdgeWeight){
+                        topEdgeWeight = edgeWeight;
+                    }
                 }
-                nodeWeightThreshold = 0;
-                connWeightThreshold = 0;
-                */
-
+                
                 updatePtsColor();
+                
             }
 
             // Adjust so that the origini is at the origin point
@@ -602,6 +677,15 @@
                 var scaleFactor = 10;
 
 				for ( let i = 0; i < maxParticleCount; i ++ ) {
+                    // ** Original point coordinate adjustment in deposit_reader.py **
+					particlePositions[ i * 3 ] *= SCALING_FACTOR_SLIME;
+					particlePositions[ i * 3 + 1 ] *= SCALING_FACTOR_SLIME;
+                    particlePositions[ i * 3 + 2 ] *= SCALING_FACTOR_SLIME;
+					particlePositions[ i * 3 ] -= GRID_MIN[0];
+					particlePositions[ i * 3 + 1 ] -= GRID_MIN[1];
+                    particlePositions[ i * 3 + 2 ] -= GRID_MIN[2];
+
+
 					particlePositions[ i * 3 ] -= originX;
 					particlePositions[ i * 3 + 1 ] -= originY;
                     particlePositions[ i * 3 + 2 ] -= originZ;
@@ -657,7 +741,7 @@
                             particleColor[ i * 3 + 1 ] = finalColor[1] / 255;
                             particleColor[ i * 3 + 2 ] = finalColor[2] / 255;
 
-                            particleOpacity[i] = 1 - Math.exp(-opacityTuning * ratio);
+                            particleOpacity[i] = (1 - opacityTuning) + opacityTuning * particleConnectionWeight[i] / topEdgeWeight;
 
                             if (mypos == filterPOS) {
                                 particleOpacity[i] = 1;
@@ -680,33 +764,6 @@
                     }
                 }
             }
-
-            // #######################################################
-            //      COPY N PASTE FROM THE WEB
-            // #######################################################
-
-            var getFileBlob = function (url, cb) {
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", url);
-                xhr.responseType = "blob";
-                xhr.addEventListener('load', function() {
-                    cb(xhr.response);
-                });
-                xhr.send();
-            };
-
-            var blobToFile = function (blob, name) {
-                blob.lastModifiedDate = new Date();
-                blob.name = name;
-                return blob;
-            };
-
-            var getFileObject = function(filePathOrUrl, cb) {
-                var splitUrl = filePathOrUrl.split('/');
-                getFileBlob(filePathOrUrl, function (blob) {
-                    cb(blobToFile(blob, splitUrl[splitUrl.length - 1]));
-                });
-            };
 
 		</script>
 	</body>
