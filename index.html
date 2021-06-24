@@ -108,6 +108,7 @@
             let controls;
 
             let gui;
+            let GUIparam;
 
             let origini = 0;
             let originAttr = '';
@@ -117,6 +118,9 @@
 
             let raycaster, mouse = new THREE.Vector2(), INTERSECTED;
             let originalHEX;
+
+            var chooseAnchorController;
+            var anchorList = ["0: also_ADV", "918: right_NOUN"];
             
 			var maxParticleCount = 1000;
             const particleData = [];
@@ -206,7 +210,7 @@
 
                 gui = new GUI();
 
-                const GUIparam = {
+                GUIparam = {
                     'colorMode': "slime connect",
                     'filterPOS': "None",
                     'colorRatioPow': 0.5,
@@ -215,11 +219,12 @@
                     'opacityTuning': 0.4,
                     'shiftDim': true,
                     'displayMultiToken': false,
-                    'alwaysAnchor': false
+                    'alwaysAnchor': false,
+                    'selectAnchor': "0: also_ADV"
                 };
 
                 var colorModeList = ["slime connect", "part of speech"];
-                
+
                 gui.add(GUIparam, 'colorMode', colorModeList).name('Color Mode').onChange(function(){
                     colorMode = GUIparam.colorMode;
                     updatePtsColor();
@@ -237,17 +242,17 @@
                     colorRatioPow = GUIparam.colorRatioPow;
                     updatePtsColor();
                 })
-                
+
                 gui.add(GUIparam, 'nodeWeightThreshold', 0, 1).name('Lowest Weight').onChange(function(){
                     nodeWeightThreshold = GUIparam.nodeWeightThreshold;
                     updatePtsColor();
                 })
-                
+
                 gui.add(GUIparam, 'particleConnectionWeight', 0, 70000).name('Lowest Connect').onChange(function(){
                     connWeightThreshold = GUIparam.particleConnectionWeight;
                     updatePtsColor();
                 })
-                
+
                 gui.add(GUIparam, 'opacityTuning', 0, 1).name('Opacity Fading').onChange(function(){
                     opacityTuning = GUIparam.opacityTuning;
                     updatePtsColor();
@@ -260,7 +265,7 @@
                 gui.add(GUIparam, 'displayMultiToken').name('Show More Tokens').onChange(function(){
                     displayMultiToken = GUIparam.displayMultiToken;
                 })
-                
+
                 gui.add(GUIparam, 'alwaysAnchor').name('Keep Anchor Displayed').onChange(function(){
                     alwaysAnchor = GUIparam.alwaysAnchor;
                     updatePtsColor();
@@ -295,6 +300,8 @@
 
             // Check if the point being clicked on can be navigated, if so, load the point    
             function onDocumentDoubleClick(event) {
+                console.log(Object.keys(availableIds));
+
                 event.preventDefault();
                 if (INTERSECTED) {
                     if (availableIds[particleData[INTERSECTED].id]){ // Check if point is navigatable
@@ -309,7 +316,6 @@
                                 const file = e.target.result;
                                 var lines = file.split(/\r\n|\n/);
                                 lines = lines.slice(0, lines.length - 1);
-                                console.log(lines);
                                 loadAnchor(lines);
                             }
 
@@ -416,7 +422,7 @@
                             }
                         }
                         else{
-                            particle_mesg = particle_text;
+                            particle_mesg = intersects[i].index.toString() + ": " + particle_text;
                         }
 
 
@@ -514,7 +520,7 @@
 
                                 loadFullData(lines);
                                     
-                                // 3. Load meta-main
+                                // 3. Load anchor points
                                 console.log(dataDirectory + originAttr.toString() +".txt");
                                 getFileObject(dataDirectory + originAttr.toString() +".txt", function (anchorData) {
                                     let reader = new FileReader();
@@ -531,6 +537,29 @@
 
                                     console.log(scene);
                                 }); 
+
+                                // This is where UI elements dependent on the meta-main information are created
+                                // This exists because file reading is async
+                                gui.add(GUIparam, 'selectAnchor', anchorList).name('Select Anchor').onChange(function(){
+                                    var id = parseInt(GUIparam.selectAnchor.split(' ')[0]);
+
+                                    console.log("LOADING " + id.toString());
+                                    
+                                    originAttr = id;
+                                    getFileObject(dataDirectory + id.toString() +".txt",
+                                                        function (anchorData) {
+                                        let reader = new FileReader();
+
+                                        reader.onload = (e) => {
+                                            const file = e.target.result;
+                                            var lines = file.split(/\r\n|\n/);
+                                            lines = lines.slice(0, lines.length - 1);
+                                            loadAnchor(lines);
+                                        }
+
+                                        var a = reader.readAsText(anchorData);
+                                    }); 
+                                }); 
                             }
 
                             var a = reader.readAsText(fulldata);
@@ -544,18 +573,24 @@
 
             // LOADING META_MAIN
             function loadMetaMain(lines) {
+                anchorList = [];
+
                 for (var i = 1; i < lines.length; i++) {
                     var ln = lines[i];
                     var lnspl = ln.split(' ');
-
-                    //if (eval(lnspl[0]) >= maxParticleCount){
-                    //    continue;
-                    //}
+                    
+                    anchorList = anchorList.concat(lnspl[0] + ": " + lnspl[1]);
 
                     // TODO: We skipped size checking here, that means availableIds will have irrelevant data if point size is too big
 
                     availableIds[eval(lnspl[0])] = lnspl.slice(1).join(' ');
                 }
+
+                /* 
+                if (chooseAnchorController){
+                    chooseAnchorController = chooseAnchorController.options(anchorList);
+                }
+                */
             }
 
             // LOADING FULL DATA
