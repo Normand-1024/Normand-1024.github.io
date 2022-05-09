@@ -2,7 +2,7 @@
 
 Hello! This is my work-in-progress personal website built using Jekyll
 
-How to run locally: `jerkyll serve -P 8080 --trace` on port 8080
+How to run locally: `jekyll serve -P 8080 --trace` on port 8080
 
 ## TO-DO List
 
