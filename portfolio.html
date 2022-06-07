@@ -1,0 +1,23 @@
+---
+layout: default
+---
+
+
+<div class="posts">
+  {% for post in site.posts %}
+    <article class="post">
+
+      <h1 style="margin-bottom:1px;margin-top:1px;"><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
+
+      <h4 style="margin-top:1px;font-size:80%;">{{post.date | date: "%B, %Y"}} | {{post.topic}}</h4>
+
+      <div class="entry">
+      {{ post.description }}
+      </div>
+
+      <img src="{{ post.image }}" height="300">
+
+      <!--<a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>-->
+    </article>
+  {% endfor %}
+</div>

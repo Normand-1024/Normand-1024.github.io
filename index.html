@@ -4,17 +4,13 @@ layout: default
 
 
 <div class="posts">
-  {% for post in site.posts %}
-    <article class="post">
-
-      <h1 style="margin-bottom:1px;margin-top:1px;"><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
-      <h4 style="margin-top:1px;font-size:80%;">{{post.topic}}</h4>
-
-      <div class="entry">
-        {{ post.excerpt }}
-      </div>
-
-      <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
-    </article>
-  {% endfor %}
+  <div class="index-grid-container"> 
+    <div>
+      <img src="/images/self-pic.png" alt="Intro Shot">
+    </div>
+    <h4>My name is Hongwei Zhou. People usually call me Henry. I'm currently a Ph.D. student in University of California, Santa Cruz.
+      <br><br>
+    At the moment, I'm exploring the intersection between philosophy, critical theory, AI and Games. I have a special interest in the philosophy of Gilles Deleuze.
+    </h4>
+  </div>
 </div>
