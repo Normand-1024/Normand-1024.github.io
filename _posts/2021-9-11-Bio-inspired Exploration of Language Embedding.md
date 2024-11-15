@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Bio-inspired Exploration of Language Embedding
+title: Polyglot - Bio-inspired Exploration of Language Embedding
 topic: Data Visualization, Information Retrieval, Natural Language Processing
 description: I explore the structural discovery potential of a particular agent-based system named Monte Carlo Physarium Machine - an algorithm inspired by slime mold. I apply it to language embedding data reduced to three dimensions. I also developed a visualization tool named Polyglot, which is available to use online.
 image: /images/portfolio/1_tool_overview.png
@@ -30,10 +30,12 @@ attracted to it. Thus, the agent’s travel trajectory is steered by the density
 We also develop a web visualization tool named [Polyglot](https://github.com/CreativeCodingLab/Polyglot). This application allows the examination of word embedding data in 3D space. In addition to 3D navigation of the scatter plot space, the application also uses colors to enable two ways of exploring the dataset: (1) coloring based on the result of MCPM and (2) coloring based on each word's part-of-speech tag. My media-making statement provided below details the iterations we went through with the tools.
 
 
-[>> Read my master thesis here <<](/files/Zhou_ISLANDS_AND_BRIDGES_OF_LANGUAGE.pdf)
+[>> Read my Master Thesis <<](/files/Zhou_ISLANDS_AND_BRIDGES_OF_LANGUAGE.pdf)
 
-[>> Interact with Polyglot here <<](https://github.com/CreativeCodingLab/Polyglot)
+[>> Interact with Polyglot <<](https://creativecodinglab.github.io/Polyglot/index.html)
 
-[>> Read my media-making statement here <<](/files/Polyglot-MediamakingStatement.pdf)
+[>> Polyglot Github <<](https://github.com/CreativeCodingLab/Polyglot)
 
-[>> Read our paper published in VIS4DH 2020 here <<](https://www.computer.org/csdl/proceedings-article/vis4dh/2020/915300a007/1pZ0Xs0EEqk)
+[>> Read my Media Statement <<](/files/Polyglot-MediamakingStatement.pdf)
+
+[>> Read our Paper Published in VIS4DH 2020 <<](https://www.computer.org/csdl/proceedings-article/vis4dh/2020/915300a007/1pZ0Xs0EEqk)

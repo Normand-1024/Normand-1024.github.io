@@ -15,6 +15,6 @@ This is a class project that I worked on in a Game AI class with two other peopl
 
 We published a workshop paper in FDG 2018, which is provided below. My technical statement, also provided below, details the development of the project, along with the technical issues we ran into and their solutions.
 
-[>> Read our paper here <<](/files/AHybridSearchAgentinPommerman.pdf)
+[>> Read our Paper <<](https://dl.acm.org/doi/abs/10.1145/3235765.3235812)
 
-[>> Read my technical statement here <<](/files/Pommerman-TechnicalStatement.pdf)
+[>> Read my Technical Statement <<](/files/Pommerman-TechnicalStatement.pdf)

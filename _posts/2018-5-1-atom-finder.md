@@ -17,4 +17,4 @@ My main contribution was to develop classifiers for certain atoms such as the *C
 
 This was my first experience participating in a research project. I also learned functional programming and Clojure, which was very different from C-like programming languages.
 
-[>> Read our paper here <<](https://dl.acm.org/doi/10.1145/3196398.3196432)
+[>> Read our Paper <<](https://dl.acm.org/doi/10.1145/3196398.3196432)

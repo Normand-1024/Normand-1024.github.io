@@ -1,0 +1,19 @@
+I"�<p><img src="/images/portfolio/SoPScreenshot.png" alt="Sea of Paint Screenshot" />
+<em>A Screenshot of Sea of Paint</em></p>
+
+<p>The game is set in a sci-fi setting where a technology called the Sea, as analog to Big Data, becomes an ever-present part of the world. And the Machine, as analog to AI, is able to conjure up “spirits” from the sea. The game is set between a conversation between a Machine operator and a “spirit”, where the operator seeks to generate images that capture the spirit’s life. The game explores the issues and concerns around contemporary data-driven AI technologies through both its narrative and gameplay, including questions around tech-mediated humanity and the socio-political questions that might raise around AI tech.</p>
+
+<p>1) The game’s theme explores the issues of contemporary data-driven AI technology. Much of character-building and writing is informed by actual research on the issue, including labor conditions, extractive dynamics, corporatism etc.. These socially critical perspectives are embedded within the sci-fi setting and the dialogues between the two main characters. Early play testers reported discomfort because of the underlying power dynamics that dictates their interactions.</p>
+
+<p>2) Several characters mentioned are data workers, whose stories are inspired by many actual studies and reports on real-life data workers. In addition to the speculative and philosophical aspects, the game also seeks to bring attention to the marginalized populations behind data-driven AI technologies</p>
+
+<p>3) The game has a text-to-image interaction without using generative AI models. The player uses text to extract and compose images both for gameplay purposes and creativities. This decision entangles much of the visual design and art making with the interactive design.</p>
+
+<p><a href="https://normand-1024.github.io/sea-of-paint/">» Play the Sea of Paint Demo «</a></p>
+
+<p><a href="https://github.com/Normand-1024/sea-of-paint">» Sea of Paint Github «</a></p>
+
+<p><a href="/files/More_than_Interactivity__Designing_a_Critical_AI_Game_beyond_Ludo_Centrism.pdf">» Read my Draft on the Game’s Design «</a></p>
+
+<p><a href="https://dl.acm.org/doi/10.1145/3649921.3650001">» Read my Paper on Text-to-Image «</a></p>
+:ET
