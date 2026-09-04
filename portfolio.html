@@ -5,19 +5,21 @@ layout: default
 
 <div class="posts">
   {% for post in site.posts %}
-    <article class="post">
+    {% if post.path contains 'portfolio' %}
+      <article class="post">
 
-      <h1 style="margin-bottom:1px;margin-top:1px;"><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
+        <h1 style="margin-bottom:1px;margin-top:5%;"><a href="{{ post.link }}"  target="_blank">{{ post.title }}</a></h1>
 
-      <h4 style="margin-top:1px;font-size:80%;">{{post.date | date: "%B, %Y"}} | {{post.topic}}</h4>
+        <h4 style="margin-top:1px;font-size:80%;">{{post.date | date: "%B, %Y"}} | {{post.topic}}</h4>
 
-      <div class="entry">
-      {{ post.description }}
-      </div>
+        <div class="entry">
+        {{ post.description }}
+        </div>
 
-      <img src="{{ post.image }}" height="300">
+        <img src="{{ post.image }}" height="300">
 
-      <!--<a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>-->
-    </article>
+        <!--<a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>-->
+      </article>
+    {% endif %}
   {% endfor %}
 </div>
