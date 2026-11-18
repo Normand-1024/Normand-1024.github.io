@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark">
+<title>Henry - Dithered  Fading</title>
+<link rel="stylesheet" href="../viewer.css">
+<body class="export-viewer"><div id="viewport-column"><main id="viewer-stage"><canvas id="canvas"></canvas></main>
+<div id="timecontrols-panel" role="group" aria-label="Playback controls">
+<button id="timecontrols-restart" type="button" title="Restart playback" aria-label="Restart playback"><span class="timecontrols-restart-icon" aria-hidden="true"></span></button>
+<button id="timecontrols-play" type="button" title="Pause playback" aria-label="Pause playback"><span aria-hidden="true">&#10074;&#10074;</span></button>
+<input id="timecontrols-seek" type="range" min="0" max="120" step="0.01" value="0" aria-label="Seek playback">
+<small><output id="timecontrols-time"></output></small>
+<button id="timecontrols-mute" type="button" title="Mute audio" aria-label="Mute audio"><span aria-hidden="true">&#9834;</span></button>
+<button id="timecontrols-fullscreen" type="button" title="Fullscreen" aria-label="Fullscreen"><span aria-hidden="true">&#9974;</span></button>
+</div></div></body>
+<script src="../player.js"></script>
+<script>restofusPlayer({"controls":[{"name":"fadeStart","type":"float","components":1,"defaultValue":[0],"min":0,"max":1,"folder":"Uniforms","isColor":false,"annotated":false}],"title":"Henry - Dithered  Fading","audioCount":0,"playback":{"duration":120,"fadeInOut":false,"fadeInDuration":3,"fadeOutDuration":5},"duration":120,"shaderPath":"shader.frag","includesPath":"includes/","saved":{"fadeStart":0.79,"u_tex_dither":"math/BayerDither8x8.png","u_tex_smoke1":"noise/Perlin_Perlin_10.png","u_tex_smoke2":"noise/Perlin_Perlin_23.png","u_tex_sims":"shaderImages/Gxv813v.png"},"aspect":null,"textures":{"u_tex_dither":{"url":"../assets/math/BayerDither8x8.png","colorSpace":"data","hdr":false},"u_tex_smoke1":{"url":"../assets/noise/Perlin_Perlin_10.png","colorSpace":"data","hdr":false},"u_tex_smoke2":{"url":"../assets/noise/Perlin_Perlin_23.png","colorSpace":"data","hdr":false},"u_tex_sims":{"url":"../assets/shaderImages/Gxv813v.png"}}});</script>
+</html>

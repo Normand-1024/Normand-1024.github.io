@@ -1,0 +1,17 @@
+Sketch: Henry - Dithered  Fading
+Created by: Henry Zhou
+
+Third party content:
+
+- Math / dither matrices, Fernando Ramallo, License CC0-1.0.
+  Files:
+  - math/BayerDither8x8.png
+
+- Noise Texture Pack (768 textures, 18 categories), Screaming Brain Studios, License CC0-1.0. (https://opengameart.org/content/700-noise-textures)
+  Files:
+  - noise/Perlin_Perlin_10.png
+  - noise/Perlin_Perlin_23.png
+
+- Other assets, license unknown.
+  Files:
+  - https://i.imgur.com/Gxv813v.png

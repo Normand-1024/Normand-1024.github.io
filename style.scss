@@ -319,13 +319,30 @@ footer {
 	padding: 0;
 }
 
+.photo-gallery {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 10px;
+}
+
 .photo-gallery li {
-	display: inline-block;
-	width: 32%;
+	display: block;
+	width: 100%;
+	aspect-ratio: 1 / 1;
+	overflow: hidden;
 }
 
 .photo-gallery li img {
 	width: 100%;
+	height: 100%;
+	display: block;
+	object-fit: cover;
+}
+
+@media (max-width: 600px) {
+	.photo-gallery {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
 }
 
 //

@@ -1,0 +1,104 @@
+{
+  "main": "default",
+  "baseline": {
+    "duration": 120,
+    "fadeInOut": false,
+    "fadeInDuration": 3,
+    "fadeOutDuration": 5,
+    "sketch": {
+      "Uniforms": {
+        "grassCol": [
+          0.2896363414417614,
+          0.5558238636363637,
+          0.3180574050094143
+        ],
+        "skyCol2": [
+          0.06730916341145834,
+          0.2830965909090909,
+          0.24140016611657958
+        ],
+        "skyHorizonCol": [
+          0.17832395807259813,
+          0.142904176037721,
+          0.2012784090909091
+        ],
+        "skyCol1": [
+          0.10324035028014517,
+          0.13106734262973768,
+          0.17400568181818177
+        ],
+        "u_tex_floor": "noise/Cracks_Cracks_8.png",
+        "u_tex_clouds": "noise/Turbulence_Turbulence_1.png",
+        "u_tex_dither": "math/BayerDither8x8.png",
+        "u_tex_windowglass": "lukesgenerictextures/marble_black.png",
+        "u_tex_windowframe": "lukesgenerictextures/dirty_metal_door.png",
+        "u_tex_star": "color/tex_eff_aura05.png",
+        "u_tex_mountain": "lukesgenerictextures/vibrant_green_grass.png"
+      },
+      "Timeline: record": {
+        "duration": 1,
+        "weight": 1
+      }
+    },
+    "passes": {
+      "Main": {
+        "enabled": true,
+        "downsample": 0.75
+      }
+    },
+    "timelines": [
+      {
+        "id": "record",
+        "active": false
+      }
+    ],
+    "fixedResolution": null,
+    "maxResolution": 1920
+  },
+  "variations": {
+    "default": {
+      "sketch": {
+        "Uniforms": {
+          "grassCol": [
+            0.2896363414417614,
+            0.5558238636363637,
+            0.3180574050094143
+          ],
+          "skyCol2": [
+            0.06730916341145834,
+            0.2830965909090909,
+            0.24140016611657958
+          ],
+          "skyHorizonCol": [
+            0.17832395807259813,
+            0.142904176037721,
+            0.2012784090909091
+          ],
+          "skyCol1": [
+            0.10324035028014517,
+            0.13106734262973768,
+            0.17400568181818177
+          ],
+          "u_tex_floor": "noise/Cracks_Cracks_8.png",
+          "u_tex_clouds": "noise/Turbulence_Turbulence_1.png",
+          "u_tex_dither": "math/BayerDither8x8.png",
+          "u_tex_windowglass": "lukesgenerictextures/marble_black.png",
+          "u_tex_windowframe": "lukesgenerictextures/dirty_metal_door.png",
+          "u_tex_star": "color/tex_eff_aura05.png",
+          "u_tex_mountain": "lukesgenerictextures/vibrant_green_grass.png"
+        },
+        "Timeline: record": {
+          "duration": 1,
+          "weight": 1
+        }
+      },
+      "timelines": [
+        {
+          "id": "record",
+          "keyframes": [],
+          "sections": []
+        }
+      ]
+    }
+  }
+}

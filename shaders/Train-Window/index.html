@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark">
+<title>Henry W3 Assignment: Train Window</title>
+<link rel="stylesheet" href="../viewer.css">
+<body class="export-viewer"><div id="viewport-column"><main id="viewer-stage"><canvas id="canvas"></canvas></main>
+<div id="timecontrols-panel" role="group" aria-label="Playback controls">
+<button id="timecontrols-restart" type="button" title="Restart playback" aria-label="Restart playback"><span class="timecontrols-restart-icon" aria-hidden="true"></span></button>
+<button id="timecontrols-play" type="button" title="Pause playback" aria-label="Pause playback"><span aria-hidden="true">&#10074;&#10074;</span></button>
+<input id="timecontrols-seek" type="range" min="0" max="120" step="0.01" value="0" aria-label="Seek playback">
+<small><output id="timecontrols-time"></output></small>
+<button id="timecontrols-mute" type="button" title="Mute audio" aria-label="Mute audio"><span aria-hidden="true">&#9834;</span></button>
+<button id="timecontrols-fullscreen" type="button" title="Fullscreen" aria-label="Fullscreen"><span aria-hidden="true">&#9974;</span></button>
+</div></div></body>
+<script src="../player.js"></script>
+<script>restofusPlayer({"controls":[{"name":"grassCol","type":"vec3","components":3,"defaultValue":[0,0.5,0],"min":0,"max":1,"folder":"Uniforms","isColor":true,"annotated":true},{"name":"skyCol2","type":"vec3","components":3,"defaultValue":[0.5,0.2,0.3],"min":0,"max":1,"folder":"Uniforms","isColor":true,"annotated":true},{"name":"skyHorizonCol","type":"vec3","components":3,"defaultValue":[0.886,0.986,0.971],"min":0,"max":1,"folder":"Uniforms","isColor":true,"annotated":true},{"name":"skyCol1","type":"vec3","components":3,"defaultValue":[0.54,0.709,0.825],"min":0,"max":1,"folder":"Uniforms","isColor":true,"annotated":true}],"title":"Henry W3 Assignment: Train Window","audioCount":0,"playback":{"duration":120,"fadeInOut":false,"fadeInDuration":3,"fadeOutDuration":5},"duration":120,"shaderPath":"shader.frag","includesPath":"includes/","saved":{"grassCol":[0.2896363414417614,0.5558238636363637,0.3180574050094143],"skyCol2":[0.06730916341145834,0.2830965909090909,0.24140016611657958],"skyHorizonCol":[0.17832395807259813,0.142904176037721,0.2012784090909091],"skyCol1":[0.10324035028014517,0.13106734262973768,0.17400568181818177],"u_tex_floor":"noise/Cracks_Cracks_8.png","u_tex_clouds":"noise/Turbulence_Turbulence_1.png","u_tex_dither":"math/BayerDither8x8.png","u_tex_windowglass":"lukesgenerictextures/marble_black.png","u_tex_windowframe":"lukesgenerictextures/dirty_metal_door.png","u_tex_star":"color/tex_eff_aura05.png","u_tex_mountain":"lukesgenerictextures/vibrant_green_grass.png"},"aspect":null,"textures":{"u_tex_floor":{"url":"../assets/noise/Cracks_Cracks_8.png","colorSpace":"data","hdr":false},"u_tex_clouds":{"url":"../assets/noise/Turbulence_Turbulence_1.png","colorSpace":"data","hdr":false},"u_tex_dither":{"url":"../assets/math/BayerDither8x8.png","colorSpace":"data","hdr":false},"u_tex_windowglass":{"url":"../assets/lukesgenerictextures/marble_black.png","colorSpace":"srgb","hdr":false},"u_tex_windowframe":{"url":"../assets/lukesgenerictextures/dirty_metal_door.png","colorSpace":"srgb","hdr":false},"u_tex_star":{"url":"../assets/color/tex_eff_aura05.png","colorSpace":"srgb","hdr":false},"u_tex_mountain":{"url":"../assets/lukesgenerictextures/vibrant_green_grass.png","colorSpace":"srgb","hdr":false}}});</script>
+</html>

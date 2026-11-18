@@ -1,0 +1,31 @@
+Sketch: Henry W4: Deer Landscape
+Created by: Henry Zhou
+
+Third party content:
+
+- Other assets, license unknown.
+  Files:
+  - https://media.freestocktextures.com/cache/d6/ce/d6cec2cf2787bc8c8964b7459bb05227.jpg
+  - https://pngimg.com/uploads/deer/deer_PNG10183.png
+
+- Noise Texture Pack (768 textures, 18 categories), Screaming Brain Studios, License CC0-1.0. (https://opengameart.org/content/700-noise-textures)
+  Files:
+  - noise/Cracks_Cracks_8.png
+  - noise/Turbulence_Turbulence_1.png
+
+- Math / dither matrices, Fernando Ramallo, License CC0-1.0.
+  Files:
+  - math/BayerDither8x8.png
+
+- Luke's Generic Textures, Luke Vincent (photos by Luke Vincent and Tiana Young), License CC0-1.0. (https://lukewasthefish.itch.io/lukes-generic-textures)
+  Files:
+  - lukesgenerictextures/marble_black.png
+  - lukesgenerictextures/green_metal_crystals.png
+  - lukesgenerictextures/little_flower_grass.png
+  - lukesgenerictextures/clouds.png
+
+- NOVA Shader sample textures, CyberAgent, Inc., License MIT. (https://github.com/CyberAgentGameEntertainment/NovaShader)
+MIT License, Copyright 2021 CyberAgent, Inc.
+  Files:
+  - color/tex_eff_aura05.png
+  - color/tex_eff_loop_buff02.png

@@ -1,0 +1,117 @@
+{
+  "main": "default",
+  "baseline": {
+    "sketch": {
+      "Uniforms": {
+        "snowCol": [
+          0.9144886363636364,
+          0.7580094696969698,
+          0.6909469696969698,
+          1
+        ],
+        "skyCol2": [
+          0.5835227272727272,
+          0.42013636363636364,
+          0.2334090909090909,
+          1
+        ],
+        "skyHorizonCol": [
+          0.1535173611111111,
+          0.2796875,
+          0.14916666666666664,
+          1
+        ],
+        "skyCol1": [
+          0.07107954545454545,
+          0.1052413293087121,
+          0.15795454545454546,
+          1
+        ],
+        "u_tex_nightsky": "https://media.freestocktextures.com/cache/d6/ce/d6cec2cf2787bc8c8964b7459bb05227.jpg",
+        "u_tex_floor": "noise/Cracks_Cracks_8.png",
+        "u_tex_clouds": "noise/Turbulence_Turbulence_1.png",
+        "u_tex_dither": "math/BayerDither8x8.png",
+        "u_tex_windowglass": "lukesgenerictextures/marble_black.png",
+        "u_tex_windowframe": "lukesgenerictextures/green_metal_crystals.png",
+        "u_tex_star": "color/tex_eff_aura05.png",
+        "u_tex_grass": "lukesgenerictextures/little_flower_grass.png",
+        "u_tex_flame": "lukesgenerictextures/green_metal_crystals.png",
+        "u_tex_water": "lukesgenerictextures/clouds.png",
+        "u_tex_water_alpha": "color/tex_eff_loop_buff02.png",
+        "u_tex_deer": "https://pngimg.com/uploads/deer/deer_PNG10183.png"
+      },
+      "Timeline: record": {
+        "duration": 1,
+        "weight": 1
+      }
+    },
+    "passes": {
+      "Main": {
+        "enabled": true,
+        "downsample": 0.75
+      }
+    },
+    "timelines": [
+      {
+        "id": "record",
+        "active": false
+      }
+    ],
+    "fixedResolution": null
+  },
+  "variations": {
+    "default": {
+      "sketch": {
+        "Uniforms": {
+          "snowCol": [
+            0.9144886363636364,
+            0.7580094696969698,
+            0.6909469696969698,
+            1
+          ],
+          "skyCol2": [
+            0.5835227272727272,
+            0.42013636363636364,
+            0.2334090909090909,
+            1
+          ],
+          "skyHorizonCol": [
+            0.1535173611111111,
+            0.2796875,
+            0.14916666666666664,
+            1
+          ],
+          "skyCol1": [
+            0.07107954545454545,
+            0.1052413293087121,
+            0.15795454545454546,
+            1
+          ],
+          "u_tex_nightsky": "https://media.freestocktextures.com/cache/d6/ce/d6cec2cf2787bc8c8964b7459bb05227.jpg",
+          "u_tex_floor": "noise/Cracks_Cracks_8.png",
+          "u_tex_clouds": "noise/Turbulence_Turbulence_1.png",
+          "u_tex_dither": "math/BayerDither8x8.png",
+          "u_tex_windowglass": "lukesgenerictextures/marble_black.png",
+          "u_tex_windowframe": "lukesgenerictextures/green_metal_crystals.png",
+          "u_tex_star": "color/tex_eff_aura05.png",
+          "u_tex_grass": "lukesgenerictextures/little_flower_grass.png",
+          "u_tex_flame": "lukesgenerictextures/green_metal_crystals.png",
+          "u_tex_water": "lukesgenerictextures/clouds.png",
+          "u_tex_water_alpha": "color/tex_eff_loop_buff02.png",
+          "u_tex_deer": "https://pngimg.com/uploads/deer/deer_PNG10183.png"
+        },
+        "Timeline: record": {
+          "duration": 1,
+          "weight": 1
+        }
+      },
+      "timelines": [
+        {
+          "id": "record",
+          "keyframes": [],
+          "sections": []
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "main": "default",
+  "baseline": {
+    "duration": 120,
+    "fadeInOut": false,
+    "fadeInDuration": 3,
+    "fadeOutDuration": 5,
+    "sketch": {
+      "Uniforms": {
+        "fadeStart": 0,
+        "u_tex_dither": "math/BayerDither8x8.png",
+        "u_tex_smoke1": "noise/Perlin_Perlin_10.png",
+        "u_tex_smoke2": "noise/Perlin_Perlin_23.png",
+        "u_tex_sims": "https://i.imgur.com/Gxv813v.png"
+      },
+      "Timeline: record": {
+        "duration": 1,
+        "weight": 1
+      }
+    },
+    "passes": {
+      "Main": {
+        "enabled": true,
+        "downsample": 0.75
+      }
+    },
+    "timelines": [
+      {
+        "id": "record",
+        "active": false
+      }
+    ],
+    "fixedResolution": null,
+    "maxResolution": 1920
+  },
+  "variations": {
+    "default": {
+      "sketch": {
+        "Uniforms": {
+          "fadeStart": 0.79,
+          "u_tex_dither": "math/BayerDither8x8.png",
+          "u_tex_smoke1": "noise/Perlin_Perlin_10.png",
+          "u_tex_smoke2": "noise/Perlin_Perlin_23.png",
+          "u_tex_sims": "https://i.imgur.com/Gxv813v.png"
+        },
+        "Timeline: record": {
+          "duration": 1,
+          "weight": 1
+        }
+      },
+      "timelines": [
+        {
+          "id": "record",
+          "keyframes": [],
+          "sections": []
+        }
+      ]
+    }
+  }
+}
