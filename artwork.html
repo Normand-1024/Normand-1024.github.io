@@ -10,8 +10,7 @@ layout: default
   <ul class="photo-gallery">
     {% for image in sorted_gallery %}
       <li>
-        <a href="{{ image.shader_path ? site.baseurl + image.shader_path 
-                      : site.baseurl + image.image_path }}" target="_blank">
+        <a href="{{ image.shader_path | default: image.image_path }}" target="_blank">
           <img src="{{ image.image_path }}" alt="{{ image.title }}">
         </a>
       </li>
